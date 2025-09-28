@@ -1,13 +1,19 @@
-<form action="{{route('login')}}" method="POST">
+<form action="{{ route('login') }}" method="POST">
     @csrf
-    <input type="text" name="email" value="{{old("email")}}" placeholder="email" required>
+    
+    <input type="text" name="email" value="{{ old('email') }}" placeholder="email" required>
     @error('email')
         {{ $message }}
     @enderror
+
     <input type="password" name="password" placeholder="senha" required>
     @error('password')
         {{ $message }}
     @enderror
+
+    <input type="checkbox" name="remember">
+    <label for="remember">Lembrar-me</label>
+
     <button type="submit">Entrar</button>
 </form>
 
@@ -18,4 +24,3 @@
         {{ session('success') }}
     </div>
 @endsession
-
