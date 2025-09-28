@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use PhpParser\Node\Expr\FuncCall;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RegisterRequest;
 
 class AuthController extends Controller
 {
@@ -16,31 +18,15 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
 
-        $request->validate(
-            [
-                'name' => 'required|string|max:255',
-                'email' => 'required|string|email|max:255|unique:users',
-                'password' => 'required|string|min:8'
-            ],
-            [
-                'name.required' => 'O nome é obrigatório.',
-                'name.max' => 'O nome não pode ter mais de 255 caracteres.',
-                'email.required' => 'O email é obrigatório.',
-                'email.email' => 'O email deve ser um endereço de email válido.',
-                'email.max' => 'O email não pode ter mais de 255 caracteres.',
-                'email.unique' => 'Este email já está em uso.',
-                'password.required' => 'A senha é obrigatória.',
-                'password.min' => 'A senha deve ter pelo menos 8 caracteres.'
-            ]
-        );
+        $validated = $request->validated();
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password'])
         ]);
 
         Auth::login($user);
@@ -53,13 +39,10 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
 
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        $credentials = $request->validated();
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
