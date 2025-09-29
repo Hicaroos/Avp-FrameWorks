@@ -6,20 +6,32 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ContactsRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Contact;
+use App\Models\User;
 
 class contactsController extends Controller
 {
     public readonly Contact $contact;
     public function __construct()
     {
-        $this->contact= new Contact();
+        $this->contact = new Contact();
     }
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {   
-        $contacts = Auth::user()->contacts()->latest()->get();
+    public function index(Request $request)
+    {
+        $search = $request->input('search');
+
+        $contacts = Auth::user()
+            ->contacts()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%")
+                    ->orWhere('phone', 'LIKE', "%{$search}%");
+            })
+            ->latest()
+            ->get();
+
         return view('contacts.index', compact('contacts'));
     }
 
@@ -35,10 +47,10 @@ class contactsController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(ContactsRequest $request)
-    {   
+    {
         $validated = $request->validated();
         Auth::user()->contacts()->create($validated);
-        return redirect()->route('contacts.index')->with('success','contato criado com sucesso!');
+        return redirect()->route('contacts.index')->with('success', 'contato criado com sucesso!');
     }
 
     /**
@@ -64,7 +76,7 @@ class contactsController extends Controller
     {
         $validated = $request->validated();
         $contact->update($validated);
-        return redirect()->route('contacts.index')->with('success','contato atualizado com sucesso!');
+        return redirect()->route('contacts.index')->with('success', 'contato atualizado com sucesso!');
     }
 
     /**
@@ -73,6 +85,6 @@ class contactsController extends Controller
     public function destroy(Contact $contact)
     {
         $contact->delete();
-        return redirect()->route('contacts.index')->with('success','contato excluido com sucesso!');
+        return redirect()->route('contacts.index')->with('success', 'contato excluido com sucesso!');
     }
 }
