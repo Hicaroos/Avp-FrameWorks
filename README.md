@@ -1,7 +1,7 @@
 # 📒 Agenda de Contatos
 
 Um sistema de **gerenciamento de contatos** com operações CRUD completas, construído em **Laravel Fullstack + Blade**.  
-Projeto baseado no repositório [Avp-FrameWorks](https://github.com/Hicaroos/Avp-FrameWorks) (branch `develop`).
+Projeto baseado no repositório [Avp-FrameWorks](https://github.com/Hicaroos/Avp-FrameWorks).
 
 ---
 
