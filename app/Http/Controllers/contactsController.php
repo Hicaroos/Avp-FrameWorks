@@ -3,62 +3,70 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\ContactsRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Contact;
 
 class contactsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        return view('contacts.index');
+        $search = $request->input('search');
+
+        $contacts = Auth::user()
+            ->contacts()
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'LIKE', "%{$search}%")
+                    ->orWhere('email', 'LIKE', "%{$search}%")
+                    ->orWhere('phone', 'LIKE', "%{$search}%");
+            })
+            ->latest()
+            ->get();
+
+        return view('contacts.index', compact('contacts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
-        //
+        return view('contacts.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    public function store(ContactsRequest $request)
     {
-        //
+        Auth::user()->contacts()->create($request->validated());
+        return redirect()->route('contacts.index')->with('success', 'contato criado com sucesso!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function edit(Contact $contact)
     {
-        //
+        if (Auth::id() !== $contact->user_id) {
+            return redirect()->route('contacts.index')->with('error', 'Ação não autorizada');
+        }
+        return view('contacts.edit', compact('contact'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+
+    public function update(ContactsRequest $request, Contact $contact)
     {
-        //
+
+        if (Auth::id() !== $contact->user_id) {
+            return redirect()->route('contacts.index')->with('error', 'Ação não autorizada');
+        }
+
+        $contact->update($request->validated());
+        return redirect()->route('contacts.index')->with('success', 'contato atualizado com sucesso!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy(Contact $contact)
     {
-        //
+        if (Auth::id() !== $contact->user_id) {
+            return redirect()->route('contacts.index')->with('error', 'Ação não autorizada');
+        }
+
+        $contact->delete();
+        return redirect()->route('contacts.index')->with('success', 'contato excluido com sucesso!');
     }
 }

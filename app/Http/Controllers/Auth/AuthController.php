@@ -44,7 +44,7 @@ class AuthController extends Controller
 
         $credentials = $request->validated();
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             return redirect()->intended(route('contacts.index'));
         };
