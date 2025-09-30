@@ -9,15 +9,15 @@ use App\Models\User;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
+
     public function run(): void
     {
-    User::create([
-        'name' => 'teste',
-        'email' => 'teste@teste.com',
-        'password' => Hash::make('12345678')
-    ]);
+        User::firstOrCreate(
+            ['email' => 'teste@teste.com'],
+            [
+                'name' => 'teste',
+                'password' => Hash::make('123')
+            ]
+        );
     }
 }
