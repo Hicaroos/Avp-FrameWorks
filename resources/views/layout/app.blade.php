@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br" data-bs-theme="dark" class="h-100git ">
+<html lang="pt-br" data-bs-theme="dark" class="h-100">
 
 <head>
     <meta charset="UTF-8">

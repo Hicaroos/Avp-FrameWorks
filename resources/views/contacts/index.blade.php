@@ -6,7 +6,7 @@
     <div class="row justify-content-center">
         <div class="col-md-11 col-lg-9">
             <div class="card shadow-lg p-3 rounded">
-                <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                <div class="card-header bg-transparent d-flex justify-content-between">
                     <h3 class="mb-0">Meus Contatos</h3>
                     <a href="{{ route('contacts.create') }}" class="btn btn-primary">Adicionar Novo Contato</a>
                 </div>
@@ -18,6 +18,12 @@
                         </div>
                     @endif
 
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
                     <form action="{{ route('contacts.index') }}" method="GET" class="mb-3 d-flex">
                         <input type="text" name="search" class="form-control me-2" placeholder="Buscar contato..."
                             value="{{ request('search') }}">
@@ -25,7 +31,7 @@
                     </form>
 
                     @if ($contacts->isEmpty())
-                        <div class="alert alert-info text-center">
+                        <div class="alert alert-secondary text-center">
                             Você ainda não tem contatos cadastrados.
                         </div>
                     @else
